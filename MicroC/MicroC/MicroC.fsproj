@@ -60,7 +60,7 @@
     <None Include="Domain.fsx" />
     <Content Include="packages.config" />
     <None Include="ProgramGraph.fsx" />
-    <None Include="ReachingDefinitions.fsx" />
+    <None Include="Analysis.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />

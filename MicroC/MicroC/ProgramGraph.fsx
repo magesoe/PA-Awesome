@@ -68,5 +68,24 @@ let GetProgramGraph ((d,s): Program) =
     ) Map.empty
 
 
+let GetFV (pg: ProgramGraph) =
+    pg
+    |> Map.fold (fun fv _ dest ->
+      dest
+      |> List.map (fun (_,a) -> a)
+      |> List.fold (fun (fv': Set<string>) a ->
+        match a with
+        | S(VarAssign(s,_)) -> fv'.Add s
+        | S(ArrayAssign(s,_)) -> fv'.Add s
+        | S(Read s) -> fv'.Add s
+        | _ -> fv'
+        ) fv
+      ) Set.empty
 
-
+let program = 
+  DSeq(DVar("x"),DVar("y")),
+  Seq(VarAssign("y", V 1), 
+    Seq(Read "x", 
+      Seq(While(Great(Var "x", V 1), Seq(VarAssign("y", Mult(Var "x", Var "y")),VarAssign("x", Sub(Var "x", V 1))
+          )), Write(Var "y"))))
+GetProgramGraph program
