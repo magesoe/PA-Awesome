@@ -40,11 +40,10 @@ type Statement =
   | Write of AExp
 
 type Program = Declaration * Statement
-
-type Id = Guid
-type State = Id
+type OrderedValue = OV of int | Undefined
+type State = Unordered of Guid | Ordered of OrderedValue
 type Action = S of Statement | A of AExp | B of BExp | D of Declaration
 type Edge = State * Action * State
-type ProgramGraph = Map<State, (State * Action) list>
+type ProgramGraphMap = Map<State, (Action * State) list>
 
 let (++) a b = Array.append a b

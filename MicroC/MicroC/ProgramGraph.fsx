@@ -11,11 +11,11 @@ let rec PgStatement (_start: State) (_end: State)
   | VarAssign(s,a) -> [|(_start,S statement,_end)|]
   | ArrayAssign(s,a) -> [|(_start,S statement,_end)|]
   | Seq(s1,s2) -> 
-    let newState = Guid.NewGuid()   
+    let newState = Unordered (Guid.NewGuid())   
     PgStatement _start newState _break _continue s1 ++ 
     PgStatement newState _end _break _continue s2
   | Block(d,s) ->
-    let tmpState = Guid.NewGuid()
+    let tmpState = Unordered (Guid.NewGuid())
     let pgD = PgDeclaration _start tmpState _break _continue d
     let pgS = 
       if pgD = Array.empty 
@@ -25,16 +25,16 @@ let rec PgStatement (_start: State) (_end: State)
         PgStatement tmpState _end _break _continue s
     pgD ++ pgS
   | If(b,s) -> 
-      let tmpState = Guid.NewGuid()
+      let tmpState = Unordered (Guid.NewGuid())
       PgBExp _start tmpState _break _continue b ++
       PgStatement tmpState _start _break _continue s
   | IfElse(b,s1,s2) ->
-      let tmpState = Guid.NewGuid()
+      let tmpState = Unordered (Guid.NewGuid())
       PgBExp _start tmpState _break _continue b ++
       PgStatement tmpState _end _break _continue s1 ++
       PgStatement tmpState _end _break _continue s2
   | While(b,s) ->
-    let startStatement = Guid.NewGuid()
+    let startStatement = Unordered (Guid.NewGuid())
     PgBExp _start startStatement _break _continue b ++
     PgBExp _start _end _break _continue (Neg(b)) ++
     PgStatement startStatement _start _end _start s
@@ -50,30 +50,30 @@ and PgDeclaration (_start: State) (_end: State)
   | DArray s -> [|(_start,D declaration,_end)|]
   | DEmpty -> [||]
   | DSeq(d1,d2) -> 
-    let newState = Guid.NewGuid()   
+    let newState = Unordered (Guid.NewGuid())
     PgDeclaration _start newState _break _continue d1 ++
     PgDeclaration newState _end _break _continue d2
 
 
-let GetProgramGraph ((d,s): Program) =
-  let tmpState = Guid.NewGuid()
-  let _start = Guid.NewGuid()
-  let _end = Guid.NewGuid()
-  PgDeclaration _start tmpState tmpState tmpState d ++ 
-  PgStatement tmpState _end _end _end s
-  |> Array.fold (fun g (s,a,e) ->
-    match Map.tryFind s g with
-    | Some ends -> Map.add s ((a,e) :: ends) g
-    | None -> Map.add s [(a,e)] g
+let getProgramGraph ((d,s): Program) =
+  let _start = Unordered (Guid.NewGuid())
+  let _end = Unordered (Guid.NewGuid())
+  _start,_end,
+  PgStatement _start _end _end _end (Block(d,s))
+
+let getProgramGraphMap (pg: Edge[]) =
+  pg
+  |> Array.fold (fun map (s1,a,s2) ->
+    match Map.tryFind s1 map with
+    | Some edges -> Map.add s1 ((a,s2) :: edges) map
+    | None -> Map.add s1 [(a,s2)] map
     ) Map.empty
 
-
-let GetFV (pg: ProgramGraph) =
+let getFV (pg: ProgramGraphMap) =
     pg
     |> Map.fold (fun fv _ dest ->
       dest
-      |> List.map (fun (_,a) -> a)
-      |> List.fold (fun (fv': Set<string>) a ->
+      |> List.fold (fun (fv': Set<string>) (a,_) ->
         match a with
         | S(VarAssign(s,_)) -> fv'.Add s
         | S(ArrayAssign(s,_)) -> fv'.Add s
@@ -82,10 +82,29 @@ let GetFV (pg: ProgramGraph) =
         ) fv
       ) Set.empty
 
+let getOrderedPG (start: State) (pg: ProgramGraphMap) =
+  let _start = Ordered (OV 0)
+  let rec getOrdered (i: int) (current: State) (pg: ProgramGraphMap) (ordered: Edge list) =
+    match Map.tryFind current pg with
+    | None -> i,ordered
+    | Some edges ->
+      edges
+      |> List.fold (fun (i', ordered') (a,s2) ->
+        getOrdered (i + 1) s2 (Map.remove current pg) ((Ordered (OV i), a, Ordered (OV i')) :: ordered')
+        ) (i + 1, ordered)
+
+  let _end, ordered = getOrdered 0 start pg []
+  _start, Ordered (OV _end), (ordered |> List.toArray)
+
+let getOrderedPGMap s pg =
+  let map = getProgramGraphMap pg
+  let _,_,pg' = getOrderedPG s map
+  getProgramGraphMap pg'
+
 let program = 
   DSeq(DVar("x"),DVar("y")),
   Seq(VarAssign("y", V 1), 
     Seq(Read "x", 
       Seq(While(Great(Var "x", V 1), Seq(VarAssign("y", Mult(Var "x", Var "y")),VarAssign("x", Sub(Var "x", V 1))
           )), Write(Var "y"))))
-GetProgramGraph program
+
