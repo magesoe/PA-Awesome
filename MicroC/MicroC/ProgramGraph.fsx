@@ -82,6 +82,43 @@ let getFV (pg: ProgramGraphMap) =
         ) fv
       ) Set.empty
 
+let rec getFVA (aExp: AExp) =
+  match aExp with
+  | V _ -> Set.empty
+  | Var x -> Set.singleton x
+  | Array x -> Set.singleton x
+  | Add(a1,a2) -> Set.union (getFVA a1) (getFVA a2)
+  | Sub(a1,a2) -> Set.union (getFVA a1) (getFVA a2)
+  | Mult(a1,a2) -> Set.union (getFVA a1) (getFVA a2)
+  | Div(a1,a2) -> Set.union (getFVA a1) (getFVA a2)
+
+let rec getFVB (bExp: BExp) =
+  match bExp with
+  | BV _ -> Set.empty 
+  | Less(a1,a2) -> Set.union (getFVA a1) (getFVA a2)
+  | LessEq(a1,a2) -> Set.union (getFVA a1) (getFVA a2)
+  | Great(a1,a2) -> Set.union (getFVA a1) (getFVA a2)
+  | GreatEq(a1,a2) -> Set.union (getFVA a1) (getFVA a2)
+  | Eq(a1,a2) -> Set.union (getFVA a1) (getFVA a2)
+  | NotEq(a1,a2) -> Set.union (getFVA a1) (getFVA a2)
+  | And(b1,b2) -> Set.union (getFVB b1) (getFVB b2)
+  | Or(b1,b2) -> Set.union (getFVB b1) (getFVB b2)
+  | Neg b -> getFVB b
+
+let getFinalStates (pgMap: ProgramGraphMap) =
+  pgMap
+  |> Map.fold (fun final _ edges ->
+    edges
+    |> List.filter (fun (_,s) -> pgMap.ContainsKey s |> not)
+    |> List.map (fun (_,s) -> s)
+    |> Set.ofList
+    |> Set.union final
+    ) Set.empty
+
+let reverseGraph (edges: Edge[]) = 
+  edges
+  |> Array.map (fun (s1,a,s2) -> s2,a,s1)
+
 let getOrderedPG (start: State) (pg: ProgramGraphMap) =
   let _start = Ordered (OV 0)
   let rec getOrdered (i: int) (current: State) (pg: ProgramGraphMap) (ordered: Edge list) =

@@ -6,7 +6,7 @@ type Declaration =
   | DSeq of Declaration * Declaration
 
 type BExp = 
-  V of bool 
+  BV of bool 
   | Less of AExp * AExp
   | LessEq of AExp * AExp
   | Great of AExp * AExp
