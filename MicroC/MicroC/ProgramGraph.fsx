@@ -11,11 +11,11 @@ let rec PgStatement (_start: State) (_end: State)
   | VarAssign(s,a) -> [|(_start,S statement,_end)|]
   | ArrayAssign(s,a) -> [|(_start,S statement,_end)|]
   | Seq(s1,s2) -> 
-    let newState = Unordered (Guid.NewGuid())   
+    let newState = UO (Guid.NewGuid())   
     PgStatement _start newState _break _continue s1 ++ 
     PgStatement newState _end _break _continue s2
   | Block(d,s) ->
-    let tmpState = Unordered (Guid.NewGuid())
+    let tmpState = UO (Guid.NewGuid())
     let pgD = PgDeclaration _start tmpState _break _continue d
     let pgS = 
       if pgD = Array.empty 
@@ -25,16 +25,16 @@ let rec PgStatement (_start: State) (_end: State)
         PgStatement tmpState _end _break _continue s
     pgD ++ pgS
   | If(b,s) -> 
-      let tmpState = Unordered (Guid.NewGuid())
+      let tmpState = UO (Guid.NewGuid())
       PgBExp _start tmpState _break _continue b ++
       PgStatement tmpState _start _break _continue s
   | IfElse(b,s1,s2) ->
-      let tmpState = Unordered (Guid.NewGuid())
+      let tmpState = UO (Guid.NewGuid())
       PgBExp _start tmpState _break _continue b ++
       PgStatement tmpState _end _break _continue s1 ++
       PgStatement tmpState _end _break _continue s2
   | While(b,s) ->
-    let startStatement = Unordered (Guid.NewGuid())
+    let startStatement = UO (Guid.NewGuid())
     PgBExp _start startStatement _break _continue b ++
     PgBExp _start _end _break _continue (Neg(b)) ++
     PgStatement startStatement _start _end _start s
@@ -50,14 +50,14 @@ and PgDeclaration (_start: State) (_end: State)
   | DArray s -> [|(_start,D declaration,_end)|]
   | DEmpty -> [||]
   | DSeq(d1,d2) -> 
-    let newState = Unordered (Guid.NewGuid())
+    let newState = UO (Guid.NewGuid())
     PgDeclaration _start newState _break _continue d1 ++
     PgDeclaration newState _end _break _continue d2
 
 
 let getProgramGraph ((d,s): Program) =
-  let _start = Unordered (Guid.NewGuid())
-  let _end = Unordered (Guid.NewGuid())
+  let _start = UO (Guid.NewGuid())
+  let _end = UO (Guid.NewGuid())
   _start,_end,
   PgStatement _start _end _end _end (Block(d,s))
 
@@ -115,28 +115,39 @@ let getFinalStates (pgMap: ProgramGraphMap) =
     |> Set.union final
     ) Set.empty
 
-let reverseGraph (edges: Edge[]) = 
-  edges
-  |> Array.map (fun (s1,a,s2) -> s2,a,s1)
+let reversePgMap (pgMap: ProgramGraphMap) = 
+  pgMap
+  |> Map.fold (fun map k localEdges ->
+    localEdges
+    |> List.fold (fun map' (a,s) ->
+      match Map.tryFind s map' with
+      | None -> Map.add s [(a,k)] map'
+      | Some edges -> Map.add s ((a,k) :: edges) map'
+      ) map
+    ) Map.empty
+  
 
-let getOrderedPG (start: State) (pg: ProgramGraphMap) =
-  let _start = Ordered (OV 0)
-  let rec getOrdered (i: int) (current: State) (pg: ProgramGraphMap) (ordered: Edge list) =
-    match Map.tryFind current pg with
-    | None -> i,ordered
-    | Some edges ->
-      edges
-      |> List.fold (fun (i', ordered') (a,s2) ->
-        getOrdered (i + 1) s2 (Map.remove current pg) ((Ordered (OV i), a, Ordered (OV i')) :: ordered')
-        ) (i + 1, ordered)
-
-  let _end, ordered = getOrdered 0 start pg []
-  _start, Ordered (OV _end), (ordered |> List.toArray)
-
-let getOrderedPGMap s pg =
+let getNumberedPGMap pg =
   let map = getProgramGraphMap pg
-  let _,_,pg' = getOrderedPG s map
-  getProgramGraphMap pg'
+  let numbers = 
+    map
+    |> Map.fold (fun keys k edges ->
+      edges
+      |> List.fold (fun keys' (_,s) -> 
+        Set.add s keys'      
+        ) (Set.add k keys)
+      ) Set.empty
+    |> Set.toArray
+    |> Array.mapi (fun i x -> x,i)
+    |> Map.ofArray
+
+  map
+  |> Map.fold (fun map k edges ->
+    map
+    |> Map.add (O (Map.find k numbers))
+      (edges |> List.map (fun (a,s) -> a,O (Map.find s numbers)))
+    ) Map.empty
+  
 
 let program = 
   DSeq(DVar("x"),DVar("y")),
@@ -145,3 +156,8 @@ let program =
       Seq(While(Great(Var "x", V 1), Seq(VarAssign("y", Mult(Var "x", Var "y")),VarAssign("x", Sub(Var "x", V 1))
           )), Write(Var "y"))))
 
+let _start,_end,pg = getProgramGraph program    
+getProgramGraphMap pg
+
+getNumberedPGMap pg
+|> reversePgMap

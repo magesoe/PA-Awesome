@@ -27,13 +27,13 @@ let genRD ((_,a,s2): Edge) =
 
 let doRDAnalysis program = 
   let _start,_end,pg = getProgramGraph program    
-  let pgMap = getOrderedPGMap _start pg
+  let pgMap = getNumberedPGMap pg
   let init = 
     pgMap
     |> getFV
-    |> Set.map (fun x -> (x, Ordered Undefined))
+    |> Set.map (fun x -> (x, Undefined))
 
-  workListAlgo (transferBit killRD genRD) Set.isSubset Set.union pgMap [|(Ordered (OV 0), init)|]
+  workListAlgo (transferBit killRD genRD) Set.isSubset pgMap [|(O 0, init)|]
 
 let killLV (var: string) (a: Domain.Action) =
   match a with
@@ -58,18 +58,14 @@ let genLV ((_,a,s2): Edge) =
 
 let doLVAnalysis program = 
   let _start,_end,pg = getProgramGraph program    
-  let pgMap = getOrderedPGMap _start pg
+  let pgMap = getNumberedPGMap pg
   let init = 
     pgMap
     |> getFinalStates
     |> Set.map (fun s -> s,Set.empty)
     |> Set.toArray
-  
-  let reverse =
-    let _,_,opg = getOrderedPG _start (getProgramGraphMap pg)
-    reverseGraph opg
-    |> getProgramGraphMap
 
-  workListAlgo (transferBit killLV genLV) Set.isSubset Set.union reverse init
+  workListAlgo (transferBit killLV genLV) Set.isSubset (reversePgMap pgMap) init
 
 doLVAnalysis program
+

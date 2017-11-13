@@ -40,8 +40,7 @@ type Statement =
   | Write of AExp
 
 type Program = Declaration * Statement
-type OrderedValue = OV of int | Undefined
-type State = Unordered of Guid | Ordered of OrderedValue
+type State = UO of Guid | O of int | Undefined
 type Action = S of Statement | A of AExp | B of BExp | D of Declaration
 type Edge = State * Action * State
 type ProgramGraphMap = Map<State, (Action * State) list>

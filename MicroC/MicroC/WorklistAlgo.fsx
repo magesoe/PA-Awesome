@@ -3,26 +3,25 @@
 open Domain
 open ProgramGraph
 
-let workListAlgo transfer isPartOf combineRes pgMap initial =
-  let rec workListAlgo' (transfer: Set<'a> -> Edge -> Set<'a>) (isPartOf: Set<'a> -> Set<'a> -> bool) 
-    (combineRes: Set<'a> -> Set<'a> -> Set<'a>) (pgMap: ProgramGraphMap)
-    (w: Edge list) (res: Map<State, Set<'a>>) =
+let workListAlgo transfer isPartOf pgMap initial =
+  let rec workListAlgo' (transfer: Set<'a> -> Edge -> Set<'a>) (isPartOf: Set<'a> -> Set<'a> -> bool)
+    (pgMap: ProgramGraphMap) (w: Edge list) (res: Map<State, Set<'a>>) =
     if w.IsEmpty then res else
     let s1,a,s2 = w.Head
     let fromRes = res.[s1]
     let toRes = res.[s2]
     let transferRes = transfer fromRes w.Head
     match isPartOf transferRes toRes with
-    | true -> workListAlgo' transfer isPartOf combineRes pgMap w.Tail res
+    | true -> workListAlgo' transfer isPartOf pgMap w.Tail res
     | false ->
       let newRes =
         res
-        |> Map.add s2 (combineRes toRes transferRes)
+        |> Map.add s2 (Set.union toRes transferRes)
       let newEdges = 
         if pgMap.ContainsKey s2 |> not then w.Tail else
         pgMap.[s2]
         |> List.fold (fun es (a',s') -> (s2, a', s') :: es) w.Tail
-      workListAlgo' transfer isPartOf combineRes pgMap newEdges newRes
+      workListAlgo' transfer isPartOf pgMap newEdges newRes
 
   let res = 
     initial
@@ -40,4 +39,4 @@ let workListAlgo transfer isPartOf combineRes pgMap initial =
       |> List.fold (fun edges' (a, s2) ->
         (s1,a,s2) :: edges') w'
       ) []
-  workListAlgo' transfer isPartOf combineRes pgMap w res
+  workListAlgo' transfer isPartOf pgMap w res
