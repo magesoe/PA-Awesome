@@ -1,0 +1,63 @@
+{
+open System
+open System.Text
+open Parser
+open Microsoft.FSharp.Text.Lexing
+
+let keyword s =
+    match s with
+    | "int"  -> INT
+    | "if"   -> IF
+    | "else" -> ELSE
+    | "while" -> WHILE
+    | "continue" -> CONTINUE
+    | "break" -> BREAK
+    | "write" -> WRITE
+    | "read" -> READ
+    | "if" -> IF
+    | "else" -> ELSE
+    | "while" -> WHILE
+    | "continue" -> CONTINUE
+    | "break" -> BREAK
+    | "write" -> WRITE
+    | "read" -> READ
+    | "true" -> TRUE
+    | "false" -> FALSE
+    | _ -> ID s
+}
+
+let digit = ['0'-'9']
+let whitespace = [' ' '\t']
+let newline = ('\n' | '\r' '\n')
+let char = ['A'-'Z' 'a'-'z']
+let integer = digit+
+let identifier = char(char|digit|[' '])*
+
+rule tokenize =
+    parse
+    | whilespace  { tokenize lexbuf }
+    | newline     { lexbuf.EndPos <- lexbuf.EndPos.NextLine; tokenize lexbuf }
+    | integer     { Int32.Parse(Encoding.UTF8.GetString(lexbuf.Lexeme)) |> INTEGER }
+    | "("         { LPAREN }
+    | ")"         { RPAREN }
+    | "["         { LBRACKET }
+    | "]"         { RBRACKET }
+    | "{"         { LBRACE }
+    | "}"         { RBRACE }
+    | ";"         { SEMI }
+    | "&"         { AND }
+    | "|"         { OR }
+    | "="         { ASSIGN }
+    | "!"         { NOT }
+    | ">"         { GT }
+    | ">="        { GE }
+    | "<"         { LT }
+    | "<="        { LE }
+    | "=="        { EQ }
+    | "!="        { NEQ }
+    | "+"         { PLUS }
+    | "-"         { MINUS }
+    | "*"         { MUL }
+    | "/"         { DIV }
+    | identifier  { keyword(Encoding.UTF8.GetString(lexbuf.Lexeme)) }
+    | eof         { EOF }
