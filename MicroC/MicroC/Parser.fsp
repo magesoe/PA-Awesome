@@ -29,11 +29,12 @@ BasicDecl:
  |                                       { DEmpty }
 
 Decl:
-   BasicDecl (Decl)? { DSeq($1,$2) }
+   BasicDecl      { $1 }
+ | BasicDecl Decl { DSeq($1,$2) }
 
 Stmt:
-   BasicStmt BasicStmt { Seq($1,$2) }
- | BasicStmt           { $1 }
+   BasicStmt      { $1 }
+ | BasicStmt Stmt { Seq($1,$2) }
 
 BasicStmt
    ID ASSIGN Aexpr SEMI                                              { VarAssign($1, $3) }
