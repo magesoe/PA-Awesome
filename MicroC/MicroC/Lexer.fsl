@@ -35,7 +35,7 @@ let identifier = char(char|digit|[' '])*
 
 rule tokenize =
     parse
-    | whilespace  { tokenize lexbuf }
+    | whitespace  { tokenize lexbuf }
     | newline     { lexbuf.EndPos <- lexbuf.EndPos.NextLine; tokenize lexbuf }
     | integer     { Int32.Parse(Encoding.UTF8.GetString(lexbuf.Lexeme)) |> INTEGER }
     | "("         { LPAREN }

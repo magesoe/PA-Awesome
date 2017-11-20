@@ -14,7 +14,8 @@ open Domain
 %token TRUE FALSE INT
 %token EOF
 
-%start Main
+%start Main Prog
+%type <Program> Main Prog
 %%
 
 Main:
@@ -36,7 +37,7 @@ Stmt:
    BasicStmt      { $1 }
  | BasicStmt Stmt { Seq($1,$2) }
 
-BasicStmt
+BasicStmt:
    ID ASSIGN Aexpr SEMI                                              { VarAssign($1, $3) }
  | ID LBRACKET INTEGER RBRACKET ASSIGN Aexpr SEMI                    { ArrayAssign($1,$6) }
  | CONTINUE                                                          { Continue }
@@ -46,7 +47,7 @@ BasicStmt
  | WRITE ID SEMI                                                     { Write($2) }
  | WRITE ID LBRACKET INTEGER RBRACKET SEMI                           { Write($2) }
  | IF LPAREN Bexpr RPAREN LBRACE Stmt RBRACE                         { If($3,$6) }
- | IF LPAREN Bexpr PRAREN LBRACE Stmt BBRACE ELSE LBRACE Stmt RBRACE { IfElse($3,$6,$10) }
+ | IF LPAREN Bexpr RPAREN LBRACE Stmt RBRACE ELSE LBRACE Stmt RBRACE { IfElse($3,$6,$10) }
  | WHILE LPAREN Bexpr RPAREN LBRACE Stmt RBRACE                      { While($3,$6) }
  | LBRACE Decl Stmt RBRACE                                           { Block($2,$3) }
 
@@ -67,7 +68,7 @@ Aexpr2:
 Aexpr3:
    ID LBRACKET INTEGER RBRACKET { Array($1) }
  | ID                           { Var($1) }
- | Integer                      { V($1) }
+ | INTEGER                      { V($1) }
 
 Bexpr:
    Bexpr1 OR Bexpr1 { Or($1, $3) }
