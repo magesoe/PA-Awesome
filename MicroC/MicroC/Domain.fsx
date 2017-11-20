@@ -1,11 +1,10 @@
 ﻿open System
 type Declaration = 
   DVar of string 
-  | DArray of string * int
+  | DArray of string * AExp
   | DEmpty 
   | DSeq of Declaration * Declaration
-
-type BExp = 
+and BExp = 
   BV of bool 
   | Less of AExp * AExp
   | LessEq of AExp * AExp
@@ -20,7 +19,7 @@ type BExp =
 and AExp =
   V of int
   | Var of string
-  | Array of string * int
+  | Array of string * AExp
   | Add of AExp * AExp
   | Sub of AExp * AExp
   | Mult of AExp * AExp
@@ -28,7 +27,7 @@ and AExp =
 
 type Statement =
   VarAssign of string * AExp
-  | ArrayAssign of string * int * AExp
+  | ArrayAssign of string * AExp * AExp
   | Seq of Statement * Statement
   | Block of Declaration * Statement
   | If of BExp * Statement
