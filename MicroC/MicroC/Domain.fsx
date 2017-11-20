@@ -1,12 +1,11 @@
 ﻿open System
 type Declaration = 
   DVar of string 
-  | DArray of string 
+  | DArray of string * AExp
   | DEmpty 
   | DSeq of Declaration * Declaration
-
-type BExp = 
-  V of bool 
+and BExp = 
+  BV of bool 
   | Less of AExp * AExp
   | LessEq of AExp * AExp
   | Great of AExp * AExp
@@ -20,7 +19,7 @@ type BExp =
 and AExp =
   V of int
   | Var of string
-  | Array of string
+  | Array of string * AExp
   | Add of AExp * AExp
   | Sub of AExp * AExp
   | Mult of AExp * AExp
@@ -28,7 +27,7 @@ and AExp =
 
 type Statement =
   VarAssign of string * AExp
-  | ArrayAssign of string * AExp
+  | ArrayAssign of string * AExp * AExp
   | Seq of Statement * Statement
   | Block of Declaration * Statement
   | If of BExp * Statement
@@ -40,8 +39,7 @@ type Statement =
   | Write of AExp
 
 type Program = Declaration * Statement
-type OrderedValue = OV of int | Undefined
-type State = Unordered of Guid | Ordered of OrderedValue
+type State = UO of Guid | O of int | Undefined
 type Action = S of Statement | A of AExp | B of BExp | D of Declaration
 type Edge = State * Action * State
 type ProgramGraphMap = Map<State, (Action * State) list>
