@@ -1,0 +1,10 @@
+{
+	int i;
+	int A[10];
+	i:=0;
+	while(i < 10) {
+		read A[i];
+		write A[i];
+		i:=i+1;
+	}
+}

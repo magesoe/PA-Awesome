@@ -1,0 +1,6 @@
+{
+	int x;
+	read x;
+	x:=x+1;
+	write x;
+}
