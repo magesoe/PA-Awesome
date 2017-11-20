@@ -62,12 +62,12 @@ let getProgramGraph ((d,s): Program) =
   PgStatement _start _end _end _end (Block(d,s))
 
 let getProgramGraphMap (pg: Edge[]) =
-  pg
-  |> Array.fold (fun map (s1,a,s2) ->
-    match Map.tryFind s1 map with
-    | Some edges -> Map.add s1 ((a,s2) :: edges) map
-    | None -> Map.add s1 [(a,s2)] map
-    ) Map.empty
+    pg
+    |> Array.fold (fun map (s1,a,s2) ->
+      match Map.tryFind s1 map with
+      | Some edges -> Map.add s1 ((a,s2) :: edges) map
+      | None -> Map.add s1 [(a,s2)] map
+      ) Map.empty
 
 let getFV (pg: ProgramGraphMap) =
     pg
@@ -127,7 +127,7 @@ let reversePgMap (pgMap: ProgramGraphMap) =
     ) Map.empty
   
 
-let getNumberedPGMap pg =
+let getNumberedPGMap start pg =
   let map = getProgramGraphMap pg
   let numbers = 
     map
@@ -140,7 +140,8 @@ let getNumberedPGMap pg =
     |> Set.toArray
     |> Array.mapi (fun i x -> x,i)
     |> Map.ofArray
-
+  
+  numbers.[start],
   map
   |> Map.fold (fun map k edges ->
     map
@@ -159,5 +160,4 @@ let program =
 let _start,_end,pg = getProgramGraph program    
 getProgramGraphMap pg
 
-getNumberedPGMap pg
-|> reversePgMap
+getNumberedPGMap _start pg
