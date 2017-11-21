@@ -61,7 +61,7 @@
       <OtherFlags>--module Parser</OtherFlags>
     </FsYacc>
     <FsLex Include="..\MicroC\Lexer.fsl">
-      <OtherFlags>--unicode</OtherFlags>
+      <OtherFlags>--module Lexer --unicode</OtherFlags>
     </FsLex>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Program.fs" />
