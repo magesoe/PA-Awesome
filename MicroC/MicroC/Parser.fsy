@@ -43,7 +43,7 @@ BasicStmt:
  | CONTINUE                                                          { Continue }
  | BREAK                                                             { Break }
  | READ ID SEMI                                                      { Read($2) }
- | READ ID LBRACKET INTEGER RBRACKET SEMI                            { Read($2) }
+ | READ ID LBRACKET Aexpr RBRACKET SEMI                              { ArrayRead($2,$4) }
  | WRITE ID SEMI                                                     { Write($2) }
  | WRITE ID LBRACKET INTEGER RBRACKET SEMI                           { Write($2) }
  | IF LPAREN Bexpr RPAREN LBRACE Stmt RBRACE                         { If($3,$6) }
