@@ -21,7 +21,7 @@ let killRD ((var,_): string * State) (a: Domain.Action) =
 let genRD ((_,a,s2): Edge) =
   match a with
   | S(VarAssign(x,_))
-  | S(ArrayAssign(x,_))
+  | S(ArrayAssign(x,_,_))
   | S(Read x) -> Set.singleton (x,s2)
   | _ -> Set.empty
 
@@ -40,13 +40,13 @@ let killLV (var: string) (a: Domain.Action) =
   | S(VarAssign(x,_))
   | S(Read x)
   | D(DVar x)
-  | D(DArray x) -> var = x
+  | D(DArray (x,_)) -> var = x
   | _ -> false
 
 let genLV ((_,a,s2): Edge) =
   match a with
   | S(VarAssign(_,aexp))
-  | S(ArrayAssign(_,aexp))
+  | S(ArrayAssign(_,aexp,_))
   | S(Write aexp)
   | A aexp -> getFVA aexp
   | S(If(bexp,_))

@@ -9,7 +9,7 @@ let rec PgStatement (_start: State) (_end: State)
   (_break: State) (_continue: State) (statement: Statement) = 
   match statement with
   | VarAssign(s,a) -> [|(_start,S statement,_end)|]
-  | ArrayAssign(s,a) -> [|(_start,S statement,_end)|]
+  | ArrayAssign(s,a,_) -> [|(_start,S statement,_end)|]
   | Seq(s1,s2) -> 
     let newState = UO (Guid.NewGuid())   
     PgStatement _start newState _break _continue s1 ++ 
@@ -47,7 +47,7 @@ and PgDeclaration (_start: State) (_end: State)
   (_break: State) (_continue: State) (declaration: Declaration) =
   match declaration with
   | DVar s -> [|(_start,D declaration,_end)|]
-  | DArray s -> [|(_start,D declaration,_end)|]
+  | DArray (s,_) -> [|(_start,D declaration,_end)|]
   | DEmpty -> [||]
   | DSeq(d1,d2) -> 
     let newState = UO (Guid.NewGuid())
@@ -76,7 +76,7 @@ let getFV (pg: ProgramGraphMap) =
       |> List.fold (fun (fv': Set<string>) (a,_) ->
         match a with
         | S(VarAssign(s,_)) -> fv'.Add s
-        | S(ArrayAssign(s,_)) -> fv'.Add s
+        | S(ArrayAssign(s,_,_)) -> fv'.Add s
         | S(Read s) -> fv'.Add s
         | _ -> fv'
         ) fv
@@ -86,7 +86,7 @@ let rec getFVA (aExp: AExp) =
   match aExp with
   | V _ -> Set.empty
   | Var x -> Set.singleton x
-  | Array x -> Set.singleton x
+  | Array (x,_) -> Set.singleton x
   | Add(a1,a2) -> Set.union (getFVA a1) (getFVA a2)
   | Sub(a1,a2) -> Set.union (getFVA a1) (getFVA a2)
   | Mult(a1,a2) -> Set.union (getFVA a1) (getFVA a2)
