@@ -16,18 +16,11 @@ let keyword s =
     | "break" -> BREAK
     | "write" -> WRITE
     | "read" -> READ
-    | "if" -> IF
-    | "else" -> ELSE
-    | "while" -> WHILE
-    | "continue" -> CONTINUE
-    | "break" -> BREAK
-    | "write" -> WRITE
-    | "read" -> READ
     | "true" -> TRUE
     | "false" -> FALSE
     | _ -> ID s
 
-# 30 "Lexer.fs"
+# 23 "Lexer.fs"
 let trans : uint16[] array = 
     [| 
     (* State 0 *)
@@ -104,134 +97,134 @@ and tokenize  (lexbuf : Microsoft.FSharp.Text.Lexing.LexBuffer<_>) = _fslex_toke
 and _fslex_tokenize  _fslex_state lexbuf =
   match _fslex_tables.Interpret(_fslex_state,lexbuf) with
   | 0 -> ( 
-# 39 "..\MicroCParser\Lexer.fsl"
+# 32 "..\MicroCParser\Lexer.fsl"
                                    tokenize lexbuf 
-# 109 "Lexer.fs"
+# 102 "Lexer.fs"
           )
   | 1 -> ( 
-# 40 "..\MicroCParser\Lexer.fsl"
+# 33 "..\MicroCParser\Lexer.fsl"
                                    lexbuf.EndPos <- lexbuf.EndPos.NextLine; tokenize lexbuf 
-# 114 "Lexer.fs"
+# 107 "Lexer.fs"
           )
   | 2 -> ( 
-# 41 "..\MicroCParser\Lexer.fsl"
+# 34 "..\MicroCParser\Lexer.fsl"
                                    Int32.Parse(Encoding.UTF8.GetString(lexbuf.Lexeme)) |> INTEGER 
-# 119 "Lexer.fs"
+# 112 "Lexer.fs"
           )
   | 3 -> ( 
-# 42 "..\MicroCParser\Lexer.fsl"
+# 35 "..\MicroCParser\Lexer.fsl"
                                    LPAREN 
-# 124 "Lexer.fs"
+# 117 "Lexer.fs"
           )
   | 4 -> ( 
-# 43 "..\MicroCParser\Lexer.fsl"
+# 36 "..\MicroCParser\Lexer.fsl"
                                    RPAREN 
-# 129 "Lexer.fs"
+# 122 "Lexer.fs"
           )
   | 5 -> ( 
-# 44 "..\MicroCParser\Lexer.fsl"
+# 37 "..\MicroCParser\Lexer.fsl"
                                    LBRACKET 
-# 134 "Lexer.fs"
+# 127 "Lexer.fs"
           )
   | 6 -> ( 
-# 45 "..\MicroCParser\Lexer.fsl"
+# 38 "..\MicroCParser\Lexer.fsl"
                                    RBRACKET 
-# 139 "Lexer.fs"
+# 132 "Lexer.fs"
           )
   | 7 -> ( 
-# 46 "..\MicroCParser\Lexer.fsl"
+# 39 "..\MicroCParser\Lexer.fsl"
                                    LBRACE 
-# 144 "Lexer.fs"
+# 137 "Lexer.fs"
           )
   | 8 -> ( 
-# 47 "..\MicroCParser\Lexer.fsl"
+# 40 "..\MicroCParser\Lexer.fsl"
                                    RBRACE 
-# 149 "Lexer.fs"
+# 142 "Lexer.fs"
           )
   | 9 -> ( 
-# 48 "..\MicroCParser\Lexer.fsl"
+# 41 "..\MicroCParser\Lexer.fsl"
                                    SEMI 
-# 154 "Lexer.fs"
+# 147 "Lexer.fs"
           )
   | 10 -> ( 
-# 49 "..\MicroCParser\Lexer.fsl"
+# 42 "..\MicroCParser\Lexer.fsl"
                                    AND 
-# 159 "Lexer.fs"
+# 152 "Lexer.fs"
           )
   | 11 -> ( 
-# 50 "..\MicroCParser\Lexer.fsl"
+# 43 "..\MicroCParser\Lexer.fsl"
                                    OR 
-# 164 "Lexer.fs"
+# 157 "Lexer.fs"
           )
   | 12 -> ( 
-# 51 "..\MicroCParser\Lexer.fsl"
+# 44 "..\MicroCParser\Lexer.fsl"
                                     ASSIGN 
-# 169 "Lexer.fs"
+# 162 "Lexer.fs"
           )
   | 13 -> ( 
-# 52 "..\MicroCParser\Lexer.fsl"
+# 45 "..\MicroCParser\Lexer.fsl"
                                    NOT 
-# 174 "Lexer.fs"
+# 167 "Lexer.fs"
           )
   | 14 -> ( 
-# 53 "..\MicroCParser\Lexer.fsl"
+# 46 "..\MicroCParser\Lexer.fsl"
                                    GT 
-# 179 "Lexer.fs"
+# 172 "Lexer.fs"
           )
   | 15 -> ( 
-# 54 "..\MicroCParser\Lexer.fsl"
+# 47 "..\MicroCParser\Lexer.fsl"
                                    GE 
-# 184 "Lexer.fs"
+# 177 "Lexer.fs"
           )
   | 16 -> ( 
-# 55 "..\MicroCParser\Lexer.fsl"
+# 48 "..\MicroCParser\Lexer.fsl"
                                    LT 
-# 189 "Lexer.fs"
+# 182 "Lexer.fs"
           )
   | 17 -> ( 
-# 56 "..\MicroCParser\Lexer.fsl"
+# 49 "..\MicroCParser\Lexer.fsl"
                                    LE 
-# 194 "Lexer.fs"
+# 187 "Lexer.fs"
           )
   | 18 -> ( 
-# 57 "..\MicroCParser\Lexer.fsl"
+# 50 "..\MicroCParser\Lexer.fsl"
                                    EQ 
-# 199 "Lexer.fs"
+# 192 "Lexer.fs"
           )
   | 19 -> ( 
-# 58 "..\MicroCParser\Lexer.fsl"
+# 51 "..\MicroCParser\Lexer.fsl"
                                    NEQ 
-# 204 "Lexer.fs"
+# 197 "Lexer.fs"
           )
   | 20 -> ( 
-# 59 "..\MicroCParser\Lexer.fsl"
+# 52 "..\MicroCParser\Lexer.fsl"
                                    PLUS 
-# 209 "Lexer.fs"
+# 202 "Lexer.fs"
           )
   | 21 -> ( 
-# 60 "..\MicroCParser\Lexer.fsl"
+# 53 "..\MicroCParser\Lexer.fsl"
                                    MINUS 
-# 214 "Lexer.fs"
+# 207 "Lexer.fs"
           )
   | 22 -> ( 
-# 61 "..\MicroCParser\Lexer.fsl"
+# 54 "..\MicroCParser\Lexer.fsl"
                                    MUL 
-# 219 "Lexer.fs"
+# 212 "Lexer.fs"
           )
   | 23 -> ( 
-# 62 "..\MicroCParser\Lexer.fsl"
+# 55 "..\MicroCParser\Lexer.fsl"
                                    DIV 
-# 224 "Lexer.fs"
+# 217 "Lexer.fs"
           )
   | 24 -> ( 
-# 63 "..\MicroCParser\Lexer.fsl"
+# 56 "..\MicroCParser\Lexer.fsl"
                                    keyword(Encoding.UTF8.GetString(lexbuf.Lexeme)) 
-# 229 "Lexer.fs"
+# 222 "Lexer.fs"
           )
   | 25 -> ( 
-# 64 "..\MicroCParser\Lexer.fsl"
+# 57 "..\MicroCParser\Lexer.fsl"
                                    EOF 
-# 234 "Lexer.fs"
+# 227 "Lexer.fs"
           )
   | _ -> failwith "tokenize"
 

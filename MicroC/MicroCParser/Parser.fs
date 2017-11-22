@@ -358,7 +358,7 @@ let _fsyacc_reductions ()  =    [|
                 (
                    (
 # 25 "..\MicroCParser\Parser.fsy"
-                                                  Program(_2, _3) 
+                                                  (_2, _3) 
                    )
 # 25 "..\MicroCParser\Parser.fsy"
                  : Program));

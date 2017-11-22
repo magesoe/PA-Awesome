@@ -17,7 +17,10 @@ let keyword s =
     | "read" -> READ
     | "true" -> TRUE
     | "false" -> FALSE
-    | _ -> ID s
+    | _ -> ID s;;
+
+
+let lexeme = LexBuffer<_>.LexemeString;;
 }
 
 let digit = ['0'-'9']
@@ -31,7 +34,7 @@ rule tokenize =
     parse
     | whitespace  { tokenize lexbuf }
     | newline     { lexbuf.EndPos <- lexbuf.EndPos.NextLine; tokenize lexbuf }
-    | integer     { Int32.Parse(Encoding.UTF8.GetString(lexbuf.Lexeme)) |> INTEGER }
+    | integer     { Int32.Parse(lexeme lexbuf) |> INTEGER }
     | "("         { LPAREN }
     | ")"         { RPAREN }
     | "["         { LBRACKET }
@@ -53,5 +56,5 @@ rule tokenize =
     | "-"         { MINUS }
     | "*"         { MUL }
     | "/"         { DIV }
-    | identifier  { keyword(Encoding.UTF8.GetString(lexbuf.Lexeme)) }
+    | identifier  { keyword(lexeme lexbuf) }
     | eof         { EOF }
