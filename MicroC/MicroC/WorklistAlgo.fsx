@@ -1,4 +1,4 @@
-﻿#load "Domain.fsx"
+﻿#load "Domain.fs"
 #load "ProgramGraph.fsx"
 open Domain
 open ProgramGraph

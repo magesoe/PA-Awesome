@@ -1,4 +1,4 @@
-﻿#load "Domain.fsx"
+﻿#load "Domain.fs"
 open Domain
 open System
 
@@ -41,6 +41,7 @@ let rec PgStatement (_start: State) (_end: State)
   | Break -> [|(_start,S statement,_break)|]
   | Continue -> [|(_start,S statement,_continue)|]
   | Read s -> [|(_start,S statement,_end)|]
+  | ArrayRead (s,a) -> [|(_start,S statement,_end)|]
   | Write a -> [|(_start,S statement,_end)|]
 
 and PgDeclaration (_start: State) (_end: State) 

@@ -1,4 +1,4 @@
-﻿#load "Domain.fsx"
+﻿#load "Domain.fs"
 #load "ProgramGraph.fsx"
 #load "WorklistAlgo.fsx"
 open Domain
