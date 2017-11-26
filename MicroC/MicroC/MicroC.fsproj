@@ -57,15 +57,15 @@
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
-	<Compile Include="Domain.fs" />
+    <Compile Include="Domain.fs" />
     <FsYacc Include="Parser.fsy">
       <OtherFlags>--module Parser</OtherFlags>
     </FsYacc>
     <FsLex Include="Lexer.fsl">
       <OtherFlags>--unicode</OtherFlags>
     </FsLex>
-	<Compile Include="Parser.fs" />
-	<Compile Include="Lexer.fs" />
+    <Compile Include="Parser.fs" />
+    <Compile Include="Lexer.fs" />
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
@@ -73,7 +73,6 @@
     <None Include="ProgramGraph.fsx" />
     <None Include="WorklistAlgo.fsx" />
     <None Include="Analysis.fsx" />
-    
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core, Version=4.4.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">

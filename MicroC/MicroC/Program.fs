@@ -20,7 +20,12 @@ let lexAndParseFromFile filename =
     if File.Exists(filename) then lexAndParseString(File.ReadAllText(filename))
     else invalidArg "Program" "File not found";;
 
+
 [<EntryPoint>]
 let main argv = 
     printfn "%A" argv
-    0 // return an integer exit code
+    match argv with
+    | [|filename|] -> 
+        let program = lexAndParseFromFile filename
+        0
+    | _ -> failwith "Expected only one parameter";;
