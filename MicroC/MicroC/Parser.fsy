@@ -14,8 +14,8 @@ open Domain
 %token TRUE FALSE INT
 %token EOF
 
-%left AND OR GT GE LT LE EQ NEQ PLUS MINUS MUL DIV
-%nonassoc NOT
+%left AND OR GT GE LT LE EQ NEQ PLUS MINUS MUL DIV SEMI ASSIGN
+%nonassoc NOT LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET IF ELSE WHILE CONTINUE BREAK WRITE READ
 
 %start Main Prog
 %type <Program> Main Prog
@@ -31,6 +31,10 @@ BasicDecl:
    INT ID SEMI                         { DVar($2) }
  | INT ID LBRACKET Aexpr RBRACKET SEMI { DArray($2,$4) }
  |                                     { DEmpty }
+
+Array:
+   LBRACKET Aexpr RBRACKET { Some $2 }
+ |                         { None }
 
 Decl:
    BasicDecl      { $1 }
@@ -48,7 +52,6 @@ BasicStmt:
  | READ ID SEMI                                                      { Read($2) }
  | READ ID LBRACKET Aexpr RBRACKET SEMI                              { ArrayRead($2,$4) }
  | WRITE Aexpr SEMI                                                  { Write($2) }
- | WRITE Aexpr LBRACKET Aexpr RBRACKET SEMI                          { Write($2) }
  | IF LPAREN Bexpr RPAREN LBRACE Stmt RBRACE                         { If($3,$6) }
  | IF LPAREN Bexpr RPAREN LBRACE Stmt RBRACE ELSE LBRACE Stmt RBRACE { IfElse($3,$6,$10) }
  | WHILE LPAREN Bexpr RPAREN LBRACE Stmt RBRACE                      { While($3,$6) }
@@ -74,12 +77,12 @@ Aexpr3:
  | INTEGER                      { V($1) }
 
 Bexpr:
-   Bexpr1           { $1 }
- | Bexpr1 OR Bexpr1 { Or($1, $3) } 
+   Bexpr1 OR Bexpr1 { Or($1, $3) } 
+ | Bexpr1           { $1 } 
 
 Bexpr1:
-   Bexpr2            { $1 }
- | Bexpr2 AND Bexpr2 { And($1,$3) }
+   Bexpr2 AND Bexpr2 { And($1,$3) }
+ | Bexpr2            { $1 } 
 
 Bexpr2:
    TRUE                { BV(true) }
