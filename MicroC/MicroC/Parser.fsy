@@ -28,43 +28,39 @@ Prog:
    LBRACE Decl Stmt RBRACE { ($2, $3) }
 
 BasicDecl:
-   INT ID SEMI                         { DVar($2) }
- | INT ID LBRACKET Aexpr RBRACKET SEMI { DArray($2,$4) }
- |                                     { DEmpty }
-
-Array:
-   LBRACKET Aexpr RBRACKET { Some $2 }
- |                         { None }
+   INT ID                         { DVar($2) }
+ | INT ID LBRACKET Aexpr RBRACKET { DArray($2,$4) }
+ |                                { DEmpty }
 
 Decl:
-   BasicDecl      { $1 }
- | BasicDecl Decl { DSeq($1,$2) }
+   BasicDecl SEMI           { $1 }
+ | Decl SEMI BasicDecl SEMI { DSeq($3,$1)}
 
 Stmt:
    BasicStmt      { $1 }
- | BasicStmt Stmt { Seq($1,$2) }
+ | Stmt BasicStmt { Seq($2,$1) }
 
 BasicStmt:
-   ID ASSIGN Aexpr SEMI                                              { VarAssign($1, $3) }
- | ID LBRACKET Aexpr RBRACKET ASSIGN Aexpr SEMI                      { ArrayAssign($1,$3,$6) }
- | CONTINUE                                                          { Continue }
- | BREAK                                                             { Break }
- | READ ID SEMI                                                      { Read($2) }
- | READ ID LBRACKET Aexpr RBRACKET SEMI                              { ArrayRead($2,$4) }
- | WRITE Aexpr SEMI                                                  { Write($2) }
- | IF LPAREN Bexpr RPAREN LBRACE Stmt RBRACE                         { If($3,$6) }
- | IF LPAREN Bexpr RPAREN LBRACE Stmt RBRACE ELSE LBRACE Stmt RBRACE { IfElse($3,$6,$10) }
- | WHILE LPAREN Bexpr RPAREN LBRACE Stmt RBRACE                      { While($3,$6) }
- | LBRACE Decl Stmt RBRACE                                           { Block($2,$3) }
+   ID ASSIGN Aexpr SEMI                                                        { VarAssign($1, $3) }
+ | ID LBRACKET Aexpr RBRACKET ASSIGN Aexpr SEMI                                { ArrayAssign($1,$3,$6) }
+ | CONTINUE                                                                    { Continue }
+ | BREAK                                                                       { Break }
+ | READ ID SEMI                                                                { Read($2) }
+ | READ ID LBRACKET Aexpr RBRACKET SEMI                                        { ArrayRead($2,$4) }
+ | WRITE Aexpr SEMI                                                            { Write($2) }
+ | IF LPAREN Bexpr RPAREN LBRACE BasicStmt RBRACE                              { If($3,$6) }
+ | IF LPAREN Bexpr RPAREN LBRACE BasicStmt RBRACE ELSE LBRACE BasicStmt RBRACE { IfElse($3,$6,$10) }
+ | WHILE LPAREN Bexpr RPAREN LBRACE BasicStmt RBRACE                           { While($3,$6) }
+ | LBRACE Decl Stmt RBRACE                                                     { Block($2,$3) }
 
 Aexpr:
-   Aexpr1 PLUS Aexpr1  { Add($1,$3) }
- | Aexpr1 MINUS Aexpr1 { Sub($1,$3) }
+   Aexpr1 PLUS Aexpr   { Add($1,$3) }
+ | Aexpr1 MINUS Aexpr  { Sub($1,$3) }
  | Aexpr1              { $1 }
 
 Aexpr1:
-   Aexpr2 MUL Aexpr2  { Mult($1,$3) }
- | Aexpr2 DIV Aexpr2  { Div($1,$3) }
+   Aexpr2 MUL Aexpr1  { Mult($1,$3) }
+ | Aexpr2 DIV Aexpr1  { Div($1,$3) }
  | Aexpr2             { $1 }
 
 Aexpr2:
@@ -77,14 +73,11 @@ Aexpr3:
  | INTEGER                      { V($1) }
 
 Bexpr:
-   Bexpr1 OR Bexpr1 { Or($1, $3) } 
+   Bexpr AND Bexpr1 { And($3, $1)}
+ | Bexpr OR Bexpr1  { Or($3, $1) } 
  | Bexpr1           { $1 } 
 
 Bexpr1:
-   Bexpr2 AND Bexpr2 { And($1,$3) }
- | Bexpr2            { $1 } 
-
-Bexpr2:
    TRUE                { BV(true) }
  | FALSE               { BV(false) }
  | Aexpr GT Aexpr      { Great($1,$3) }
