@@ -161,7 +161,7 @@ and _fslex_tokenize  _fslex_state lexbuf =
           )
   | 12 -> ( 
 # 47 "Lexer.fsl"
-                                    ASSIGN 
+                                   ASSIGN 
 # 165 "Lexer.fs"
           )
   | 13 -> ( 

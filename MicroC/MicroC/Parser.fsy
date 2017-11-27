@@ -28,13 +28,12 @@ Prog:
    LBRACE Decl Stmt RBRACE { ($2, $3) }
 
 BasicDecl:
-   INT ID                         { DVar($2) }
- | INT ID LBRACKET Aexpr RBRACKET { DArray($2,$4) }
- |                                { DEmpty }
+   INT ID SEMI                         { DVar($2) }
+ | INT ID LBRACKET Aexpr RBRACKET SEMI { DArray($2,$4) }
 
 Decl:
-   BasicDecl SEMI           { $1 }
- | Decl SEMI BasicDecl SEMI { DSeq($3,$1)}
+   BasicDecl      { $1 }
+ | Decl BasicDecl { DSeq($2,$1)}
 
 Stmt:
    BasicStmt      { $1 }

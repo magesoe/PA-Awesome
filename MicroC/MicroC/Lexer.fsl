@@ -44,7 +44,7 @@ rule tokenize =
     | ";"         { SEMI }
     | "&"         { AND }
     | "|"         { OR }
-    | ":="         { ASSIGN }
+    | ":="        { ASSIGN }
     | "!"         { NOT }
     | ">"         { GT }
     | ">="        { GE }
