@@ -61,6 +61,7 @@
     <Content Include="packages.config" />
     <None Include="ProgramGraph.fsx" />
     <None Include="WorklistAlgo.fsx" />
+    <None Include="AnalysisStructures.fsx" />
     <None Include="Analysis.fsx" />
   </ItemGroup>
   <ItemGroup>

@@ -28,19 +28,21 @@ and AExp =
 type Statement =
   VarAssign of string * AExp
   | ArrayAssign of string * AExp * AExp
+  | Break
+  | Continue
+  | Read of string
+  | ReadArray of string * AExp
+  | Write of AExp
+  | WriteArray of string * AExp
   | Seq of Statement * Statement
   | Block of Declaration * Statement
   | If of BExp * Statement
   | IfElse of BExp * Statement * Statement
   | While of BExp * Statement
-  | Break
-  | Continue
-  | Read of string
-  | Write of AExp
 
 type Program = Declaration * Statement
 type State = UO of Guid | O of int | Undefined
-type Action = S of Statement | A of AExp | B of BExp | D of Declaration
+type Action = S of Statement | B of BExp | D of Declaration
 type Edge = State * Action * State
 type ProgramGraphMap = Map<State, (Action * State) list>
 

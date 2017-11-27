@@ -1,29 +1,11 @@
 ﻿#load "Domain.fsx"
-#load "ProgramGraph.fsx"
-#load "WorklistAlgo.fsx"
+#load "AnalysisStructures.fsx"
 open Domain
 open System
 open ProgramGraph
 open WorklistAlgo
+open AnalysisStructures
 open System.Dynamic
-
-let transferBit kill gen (current: Set<'a>) ((s1,a,s2): Edge) =
-  current
-  |> Set.filter (fun x -> (kill x a) |> not)
-  |> Set.union (gen (s1,a,s2))
-
-let killRD ((var,_): string * State) (a: Domain.Action) =
-  match a with
-  | S(VarAssign(x,_))
-  | S(Read x) -> var = x
-  | _ -> false
-
-let genRD ((_,a,s2): Edge) =
-  match a with
-  | S(VarAssign(x,_))
-  | S(ArrayAssign(x,_))
-  | S(Read x) -> Set.singleton (x,s2)
-  | _ -> Set.empty
 
 let doRDAnalysis program = 
   let _start,_end,pg = getProgramGraph program    
@@ -33,28 +15,7 @@ let doRDAnalysis program =
     |> getFV
     |> Set.map (fun x -> (x, Undefined))
 
-  nStart, pgMap, workListAlgo (transferBit killRD genRD) Set.isSubset pgMap [|(O nStart, init)|]
-
-let killLV (var: string) (a: Domain.Action) =
-  match a with
-  | S(VarAssign(x,_))
-  | S(Read x)
-  | D(DVar x)
-  | D(DArray x) -> var = x
-  | _ -> false
-
-let genLV ((_,a,s2): Edge) =
-  match a with
-  | S(VarAssign(_,aexp))
-  | S(ArrayAssign(_,aexp))
-  | S(Write aexp)
-  | A aexp -> getFVA aexp
-  | S(If(bexp,_))
-  | S(IfElse(bexp,_,_))
-  | S(While(bexp,_))
-  | B bexp -> getFVB bexp
-  | _ -> Set.empty
-
+  nStart, pgMap, workListAlgo (transferBit killRD genRD) Set.isSubset Set.union pgMap [|(O nStart, init)|] Set.empty
 
 let doLVAnalysis program = 
   let _start,_end,pg = getProgramGraph program    
@@ -65,11 +26,61 @@ let doLVAnalysis program =
     |> Set.map (fun s -> s,Set.empty)
     |> Set.toArray
 
-  nStart, pgMap, workListAlgo (transferBit killLV genLV) Set.isSubset (reversePgMap pgMap) init
+  nStart, pgMap, workListAlgo (transferBit killLV genLV) Set.isSubset Set.union (reversePgMap pgMap) init Set.empty
+
+let doDetectSignsAnalysis program = 
+  let _start,_end,pg = getProgramGraph program    
+  let nStart, pgMap = getNumberedPGMap _start pg
+
+  let fv = pgMap |> getFV
+
+  let init = 
+    fv
+    |> Set.fold (fun map x -> 
+      Map.add x (Set.ofArray [|Positive;Negative;Zero|]) map
+      ) Map.empty
+  
+  let bottomValue =
+    fv
+    |> Set.fold (fun map x -> 
+      Map.add x (Set.empty) map
+      ) Map.empty
+
+  let isPartOf (m1: Map<'a,Set<'b>>) (m2: Map<'a,Set<'b>>) =
+    if m1.IsEmpty && (m2.IsEmpty |> not) then false else
+    let res = 
+      m1
+      |> Map.forall (fun x v ->
+        let m2' = m2.[x]
+        if v.IsEmpty && (m2'.IsEmpty |> not) then false else
+        v
+        |> Set.forall (fun s ->
+          Set.contains s m2' 
+          )
+        )
+    printfn "partOf %A\n %A\n %A\n" m1 m2 res
+    res
+
+  let combine (m1: Map<string,Set<SignsLattice>>) (m2: Map<string,Set<SignsLattice>>) =
+    if m1.IsEmpty then m2 else
+    if m2.IsEmpty then m1 else
+    
+    let res =
+      m1
+      |> Map.fold (fun map x v ->
+        match Map.tryFind x map with
+        | Some v' -> Map.add x (Set.union v v') map
+        | None -> Map.add x v map
+        ) m2
+        
+    res
+    
+  nStart, pgMap, workListAlgo transferSigns isPartOf combine pgMap [|(O nStart,init)|] bottomValue
+
+
+
 
 //doRDAnalysis program
-
-
-
-doLVAnalysis program
+//doLVAnalysis program
+//doDetectSignsAnalysis program
 
