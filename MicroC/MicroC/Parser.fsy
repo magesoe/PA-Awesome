@@ -49,7 +49,7 @@ BasicStmt:
  | WRITE Aexpr SEMI                                                            { Write($2) }
  | IF LPAREN Bexpr RPAREN LBRACE BasicStmt RBRACE                              { If($3,$6) }
  | IF LPAREN Bexpr RPAREN LBRACE BasicStmt RBRACE ELSE LBRACE BasicStmt RBRACE { IfElse($3,$6,$10) }
- | WHILE LPAREN Bexpr RPAREN LBRACE BasicStmt RBRACE                           { While($3,$6) }
+ | WHILE LPAREN Bexpr RPAREN LBRACE Stmt RBRACE                                { While($3,$6) }
  | LBRACE Decl Stmt RBRACE                                                     { Block($2,$3) }
 
 Aexpr:

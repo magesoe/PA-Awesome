@@ -7,9 +7,10 @@ open Microsoft.FSharp.Text.Lexing
 open Parser
 open Lexer
 
-let lexAndParseString str =
+let lexAndParseString str=
     let lexbuf = LexBuffer<_>.FromString str
     try 
+        printfn "lexAndParseString"
         Main tokenize lexbuf
     with e ->
         let pos = lexbuf.EndPos
@@ -27,5 +28,6 @@ let main argv =
     match argv with
     | [|filename|] -> 
         let program = lexAndParseFromFile filename
+        printfn "Parsing completed"
         0
     | _ -> failwith "Expected only one parameter";;
