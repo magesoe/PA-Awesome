@@ -28,7 +28,7 @@ let whitespace = [' ' '\t']
 let newline = ('\n' | '\r' '\n')
 let char = ['A'-'Z' 'a'-'z']
 let integer = digit+
-let identifier = char(char|digit)*
+let identifier = char+
 
 rule tokenize =
     parse
