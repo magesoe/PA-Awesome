@@ -19,7 +19,6 @@ let keyword s =
     | "false" -> FALSE
     | _ -> ID s;;
 
-let log (id : string) (str : string) = Console.WriteLine(id + " " + str)
 let lexeme = LexBuffer<_>.LexemeString
 }
 
@@ -32,29 +31,29 @@ let identifier = char+
 
 rule tokenize =
     parse
-    | whitespace  { log "whitespace" (lexeme lexbuf); tokenize lexbuf }
+    | whitespace  { tokenize lexbuf }
     | newline     { lexbuf.EndPos <- lexbuf.EndPos.NextLine; tokenize lexbuf }
-    | integer     { log "integer" (lexeme lexbuf); Int32.Parse(lexeme lexbuf) |> INTEGER }
-    | "("         { log "lparen" (lexeme lexbuf); LPAREN }
-    | ")"         { log "rparen" (lexeme lexbuf); RPAREN }
-    | "["         { log "lbracket" (lexeme lexbuf);LBRACKET }
-    | "]"         { log "rbracket" (lexeme lexbuf);RBRACKET }
-    | "{"         { log "lbrace" (lexeme lexbuf);LBRACE }
-    | "}"         { log "rbrace" (lexeme lexbuf); RBRACE }
-    | ";"         { log "semi" (lexeme lexbuf); SEMI }
-    | "&"         { log "and" (lexeme lexbuf); AND }
-    | "|"         { log "or" (lexeme lexbuf); OR }
-    | ":="        { log "assign" (lexeme lexbuf); ASSIGN }
-    | "!"         { log "not" (lexeme lexbuf); NOT }
-    | ">"         { log "gt" (lexeme lexbuf); GT }
-    | ">="        { log "ge" (lexeme lexbuf); GE }
-    | "<"         { log "lt" (lexeme lexbuf); LT }
-    | "<="        { log "le" (lexeme lexbuf); LE }
-    | "=="        { log "eq" (lexeme lexbuf); EQ }
-    | "!="        { log "neq" (lexeme lexbuf); NEQ }
-    | "+"         { log "plus" (lexeme lexbuf); PLUS }
-    | "-"         { log "minus" (lexeme lexbuf); MINUS }
-    | "*"         { log "mul" (lexeme lexbuf);MUL }
-    | "/"         { log "div" (lexeme lexbuf); DIV }
-    | identifier  { log "identifier" (lexeme lexbuf); keyword(lexeme lexbuf) }
+    | integer     { Int32.Parse(lexeme lexbuf) |> INTEGER }
+    | "("         { LPAREN }
+    | ")"         { RPAREN }
+    | "["         { LBRACKET }
+    | "]"         { RBRACKET }
+    | "{"         { LBRACE }
+    | "}"         { RBRACE }
+    | ";"         { SEMI }
+    | "&"         { AND }
+    | "|"         { OR }
+    | ":="        { ASSIGN }
+    | "!"         { NOT }
+    | ">"         { GT }
+    | ">="        { GE }
+    | "<"         { LT }
+    | "<="        { LE }
+    | "=="        { EQ }
+    | "!="        { NEQ }
+    | "+"         { PLUS }
+    | "-"         { MINUS }
+    | "*"         { MUL }
+    | "/"         { DIV }
+    | identifier  { keyword(lexeme lexbuf) }
     | eof         { EOF }
