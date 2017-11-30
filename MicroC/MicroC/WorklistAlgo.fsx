@@ -3,33 +3,35 @@
 open Domain
 open ProgramGraph
 
-let workListAlgo transfer isPartOf pgMap initial =
-  let rec workListAlgo' (transfer: Set<'a> -> Edge -> Set<'a>) (isPartOf: Set<'a> -> Set<'a> -> bool)
-    (pgMap: ProgramGraphMap) (w: Edge list) (res: Map<State, Set<'a>>) =
+let workListAlgo transfer isPartOf combineRes pgMap initial bottomValue =
+  let rec workListAlgo' (transfer: 'a -> Edge -> 'a) (isPartOf: 'a -> 'a -> bool) (combineRes: 'a -> 'a -> 'a)
+    (pgMap: ProgramGraphMap) (w: Edge list) (res: Map<State, 'a>) =
     if w.IsEmpty then res else
     let s1,a,s2 = w.Head
     let fromRes = res.[s1]
     let toRes = res.[s2]
     let transferRes = transfer fromRes w.Head
+    printfn "trans %A, %A" a transferRes
     match isPartOf transferRes toRes with
-    | true -> workListAlgo' transfer isPartOf pgMap w.Tail res
+    | true -> workListAlgo' transfer isPartOf combineRes pgMap w.Tail res
     | false ->
       let newRes =
         res
-        |> Map.add s2 (Set.union toRes transferRes)
+        |> Map.add s2 (combineRes toRes transferRes)
+      printfn "new %A" newRes
       let newEdges = 
         if pgMap.ContainsKey s2 |> not then w.Tail else
         pgMap.[s2]
         |> List.fold (fun es (a',s') -> (s2, a', s') :: es) w.Tail
-      workListAlgo' transfer isPartOf pgMap newEdges newRes
+      workListAlgo' transfer isPartOf combineRes pgMap newEdges newRes
 
   let res = 
     initial
     |> Array.fold (fun map (s,v) -> Map.add s v map) 
       (pgMap |> Map.fold (fun map s1 v ->
         v
-        |> List.fold (fun map' (_,s2) -> Map.add s2 Set.empty map')
-          (Map.add s1 Set.empty map)
+        |> List.fold (fun map' (_,s2) -> Map.add s2 bottomValue map')
+          (Map.add s1 bottomValue map)
         ) Map.empty)
 
   let w =
@@ -39,4 +41,4 @@ let workListAlgo transfer isPartOf pgMap initial =
       |> List.fold (fun edges' (a, s2) ->
         (s1,a,s2) :: edges') w'
       ) []
-  workListAlgo' transfer isPartOf pgMap w res
+  workListAlgo' transfer isPartOf combineRes pgMap w res

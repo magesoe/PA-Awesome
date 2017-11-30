@@ -37,7 +37,7 @@ type Statement =
   | Break
   | Continue
   | Read of string
-  | ArrayRead of string * AExp
+  | ReadArray of string * AExp
   | Write of AExp
 
 type Program = Declaration * Statement
