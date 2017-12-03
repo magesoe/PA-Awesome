@@ -149,16 +149,3 @@ let getNumberedPGMap start pg =
     |> Map.add (O (Map.find k numbers))
       (edges |> List.map (fun (a,s) -> a,O (Map.find s numbers)))
     ) Map.empty
-  
-
-let program = 
-  DSeq(DVar("x"),DVar("y")),
-  Seq(VarAssign("y", V 1), 
-    Seq(Read "x", 
-      Seq(While(Great(Var "x", V 1), Seq(VarAssign("y", Mult(Var "x", Var "y")),VarAssign("x", Sub(Var "x", V 1))
-          )), Write(Var "y"))))
-
-let _start,_end,pg = getProgramGraph program    
-getProgramGraphMap pg
-
-getNumberedPGMap _start pg

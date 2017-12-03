@@ -77,6 +77,12 @@ let doDetectSignsAnalysis program =
     
   nStart, pgMap, workListAlgo transferSigns isPartOf combine pgMap [|(O nStart,init)|] bottomValue
 
+let program = 
+  DSeq(DVar("x"),DVar("y")),
+  Seq(VarAssign("y", V 1), 
+    Seq(Read "x", 
+      Seq(While(Great(Var "x", V 1), Seq(VarAssign("y", Mult(Var "x", Var "y")),VarAssign("x", Sub(Var "x", V 1))
+          )), Write(Var "y"))))
 
 
 
