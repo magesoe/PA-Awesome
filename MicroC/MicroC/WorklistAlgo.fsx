@@ -11,14 +11,12 @@ let workListAlgo transfer isPartOf combineRes pgMap initial bottomValue =
     let fromRes = res.[s1]
     let toRes = res.[s2]
     let transferRes = transfer fromRes w.Head
-    printfn "trans %A, %A" a transferRes
     match isPartOf transferRes toRes with
     | true -> workListAlgo' transfer isPartOf combineRes pgMap w.Tail res
     | false ->
       let newRes =
         res
         |> Map.add s2 (combineRes toRes transferRes)
-      printfn "new %A" newRes
       let newEdges = 
         if pgMap.ContainsKey s2 |> not then w.Tail else
         pgMap.[s2]
