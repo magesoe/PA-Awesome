@@ -1,5 +1,4 @@
-#load "Domain.fs"
-#load "AnalysisStructures.fsx"
+﻿module Analysis
 open Domain
 open System
 open ProgramGraph
@@ -167,8 +166,3 @@ let pInterval =
 let printMap res =
   for x in res do
     printfn "%A" x
-
-let s,pg,a = doIntervalAnalysis -1000000 1000000 pInterval
-//s
-printMap pg
-printMap a

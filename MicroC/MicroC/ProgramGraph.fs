@@ -1,4 +1,5 @@
-﻿#load "Domain.fs"
+﻿module ProgramGraph
+
 open Domain
 open System
 

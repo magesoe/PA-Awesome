@@ -1,5 +1,5 @@
-﻿#load "ProgramGraph.fsx"
-#load "WorklistAlgo.fsx"
+﻿module AnalysisStructures
+
 open Domain
 open System
 open ProgramGraph

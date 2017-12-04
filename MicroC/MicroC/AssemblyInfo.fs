@@ -1,4 +1,4 @@
-﻿namespace MicroC.AssemblyInfo
+namespace MicroC.AssemblyInfo
 
 open System.Reflection
 open System.Runtime.CompilerServices
@@ -38,4 +38,4 @@ open System.Runtime.InteropServices
 [<assembly: AssemblyFileVersion("1.0.0.0")>]
 
 do
-    ()
+()

@@ -33,7 +33,6 @@ type Statement =
   | Read of string
   | ReadArray of string * AExp
   | Write of AExp
-  | WriteArray of string * AExp
   | Seq of Statement * Statement
   | Block of Declaration * Statement
   | If of BExp * Statement

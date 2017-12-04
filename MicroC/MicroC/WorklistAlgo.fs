@@ -1,5 +1,5 @@
-﻿#load "Domain.fs"
-#load "ProgramGraph.fsx"
+﻿module WorklistAlgo
+
 open Domain
 open ProgramGraph
 
