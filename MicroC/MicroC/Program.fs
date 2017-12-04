@@ -6,6 +6,7 @@ open Microsoft.FSharp.Text.Lexing
 
 open Parser
 open Lexer
+open Analysis
 
 let lexAndParseString str=
     let lexbuf = LexBuffer<_>.FromString str
@@ -24,10 +25,27 @@ let lexAndParseFromFile filename =
 
 [<EntryPoint>]
 let main argv = 
-    printfn "%A" argv
     match argv with
-    | [|filename|] -> 
+    | [|filename; min; max|] -> 
         let program = lexAndParseFromFile filename
         printfn "Parsing completed"
+        let (rdStart, rdMap, rdRes) = doRDAnalysis program
+        let (lvStart, lvMap, lvRes) = doLVAnalysis program
+        let (_, _, dosRes) = doDetectSignsAnalysis program
+        let (_, _, iaRes) = doIntervalAnalysis (min |> int) (max |> int) program
+        printfn "Program Graph forward:"
+        printMap rdMap
+        printfn "Start Node: %d" rdStart
+        printfn "Program Graph reverse:"
+        printMap lvMap
+        printfn "Start Node: %d" lvStart
+        printfn "Reaching Definitions Analysis result:"
+        printMap rdRes
+        printfn "Live Variable Analysis result:"
+        printMap lvRes
+        printfn "Detection of Signs Analysis result:"
+        printMap dosRes
+        printfn "Interval Analysis result:"
+        printMap iaRes
         0
-    | _ -> failwith "Expected only one parameter";;
+    | _ -> failwith "Expected exactly three parameters";;

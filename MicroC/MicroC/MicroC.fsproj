@@ -68,18 +68,14 @@
     </FsLex>
     <Compile Include="Parser.fs" />
     <Compile Include="Lexer.fs" />
+	<Compile Include="ProgramGraph.fs" />
+    <Compile Include="WorklistAlgo.fs" />
+	<Compile Include="AnalysisStructures.fs" />
+    <Compile Include="Analysis.fs" />
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
     <Content Include="packages.config" />
-    <None Include="ProgramGraph.fsx" />
-    <None Include="WorklistAlgo.fsx" />
-    <None Include="AnalysisStructures.fsx" />
-    <None Include="Analysis.fsx" />
-    <Compile Include="ProgramGraph.fs" />
-    <Compile Include="AnalysisStructures.fs" />
-    <Compile Include="WorklistAlgo.fs" />
-    <Compile Include="Analysis.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core, Version=4.4.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
