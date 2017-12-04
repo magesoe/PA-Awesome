@@ -34,18 +34,18 @@ let main argv =
         let (_, _, dosRes) = doDetectSignsAnalysis program
         let (_, _, iaRes) = doIntervalAnalysis (min |> int) (max |> int) program
         printfn "Program Graph forward:"
-        printMap rdMap
+        printfn "%A" rdMap
         printfn "Start Node: %d" rdStart
         printfn "Program Graph reverse:"
-        printMap lvMap
+        printfn "%A" lvMap
         printfn "Start Node: %d" lvStart
         printfn "Reaching Definitions Analysis result:"
-        printMap rdRes
+        printfn "%A" rdRes
         printfn "Live Variable Analysis result:"
-        printMap lvRes
+        printfn "%A" lvRes
         printfn "Detection of Signs Analysis result:"
-        printMap dosRes
+        printfn "%A" dosRes
         printfn "Interval Analysis result:"
-        printMap iaRes
+        printfn "%A" iaRes
         0
     | _ -> failwith "Expected exactly three parameters";;

@@ -205,12 +205,19 @@ let rec getBasic (sigma: (string * Set<SignsLattice>) list) =
       prev
       |> Array.map (fun res -> (x, Set.singleton sign) :: res)
       )
+
+let rec allPairs l1 l2 =
+    let listPair v l = List.fold(fun acc x -> (v,x)::acc) [] l
+    match l1 with
+    | []    -> []
+    | x::xs -> let res = listPair x l2 
+               List.fold (fun acc x -> x::acc) res (allPairs xs l2);;
     
 let rec getOperatorResAExp sigma a1 a2 (f: SignsLattice * SignsLattice -> Set<'a>) =
   let s1 = aexpToSigns sigma a1
   let s2 = aexpToSigns sigma a2
-  Seq.allPairs s1 s2
-  |> Seq.map f
+  allPairs (Set.toList s1) (Set.toList s2) 
+  |> List.map f
   |> Set.unionMany
 
 and getOperatorResBExp sigma a1 a2 f =
