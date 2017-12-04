@@ -42,8 +42,8 @@ Stmt:
 BasicStmt:
    ID ASSIGN Aexpr SEMI                                                        { VarAssign($1, $3) }
  | ID LBRACKET Aexpr RBRACKET ASSIGN Aexpr SEMI                                { ArrayAssign($1,$3,$6) }
- | CONTINUE                                                                    { Continue }
- | BREAK                                                                       { Break }
+ | CONTINUE SEMI                                                               { Continue }
+ | BREAK SEMI                                                                  { Break }
  | READ ID SEMI                                                                { Read($2) }
  | READ ID LBRACKET Aexpr RBRACKET SEMI                                        { ReadArray($2,$4) }
  | WRITE Aexpr SEMI                                                            { Write($2) }

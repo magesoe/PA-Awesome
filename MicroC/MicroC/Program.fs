@@ -31,11 +31,14 @@ let main argv =
         printfn "Parsing completed"
         let (rdStart, rdMap, rdRes) = doRDAnalysis program
         let (lvStart, lvMap, lvRes) = doLVAnalysis program
-        let (_, _, dosRes) = doDetectSignsAnalysis program
-        let (_, _, iaRes) = doIntervalAnalysis (min |> int) (max |> int) program
+        let (_, dosMap, dosRes) = doDetectSignsAnalysis program
+        let (_, iaMap, iaRes) = doIntervalAnalysis (min |> int) (max |> int) program
         printfn "Program Graph forward:"
         printfn "%A" rdMap
         printfn "Start Node: %d" rdStart
+        printfn "%A" dosMap
+        printfn ""
+        printfn "%A" iaMap
         printfn "Program Graph reverse:"
         printfn "%A" lvMap
         printfn "Start Node: %d" lvStart

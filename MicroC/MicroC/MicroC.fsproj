@@ -28,8 +28,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\$(Configuration)\$(AssemblyName).XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
-    <StartArguments>
-    </StartArguments>
+    <StartArguments>fact.microC -1000000 1000000</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -68,9 +67,9 @@
     </FsLex>
     <Compile Include="Parser.fs" />
     <Compile Include="Lexer.fs" />
-	<Compile Include="ProgramGraph.fs" />
+    <Compile Include="ProgramGraph.fs" />
     <Compile Include="WorklistAlgo.fs" />
-	<Compile Include="AnalysisStructures.fs" />
+    <Compile Include="AnalysisStructures.fs" />
     <Compile Include="Analysis.fs" />
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Program.fs" />
