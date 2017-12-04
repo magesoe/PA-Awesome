@@ -14,14 +14,19 @@ let transferBit kill gen (current: Set<'a>) ((s1,a,s2): Edge) =
 let killRD ((var,_): string * State) (a: Domain.Action) =
   match a with
   | S(VarAssign(x,_))
-  | S(Read x) -> var = x
+  | S(Read x)
+  | D(DVar x)
+  | D(DArray(x,_)) -> var = x
   | _ -> false
 
 let genRD ((_,a,s2): Edge) =
   match a with
   | S(VarAssign(x,_))
   | S(ArrayAssign(x,_,_))
-  | S(Read x) -> Set.singleton (x,s2)
+  | S(Read x)
+  | S(ReadArray(x,_))
+  | D(DVar x) 
+  | D(DArray(x,_)) -> Set.singleton (x,s2)
   | _ -> Set.empty
 
 let killLV (var: string) (a: Domain.Action) =
@@ -35,11 +40,9 @@ let killLV (var: string) (a: Domain.Action) =
 let genLV ((_,a,s2): Edge) =
   match a with
   | S(VarAssign(_,aexp))
+  | S(ReadArray(_,aexp))
   | S(Write aexp) -> getFVA aexp
   | S(ArrayAssign(_,iexp,aexp)) -> Set.union (getFVA iexp) (getFVA aexp)
-  | S(If(bexp,_))
-  | S(IfElse(bexp,_,_))
-  | S(While(bexp,_))
   | B bexp -> getFVB bexp
   | _ -> Set.empty
 
@@ -276,7 +279,6 @@ and bexpToSigns (sigma: Map<string, Set<SignsLattice>>) (exp: BExp) =
 let transferSigns (sigma: Map<string,Set<SignsLattice>>) ((s1,a,s2): Edge) =
   match a with
   | S(Write _)
-  | S(WriteArray(_,_))
   | S Break
   | S Continue -> sigma
   | S(VarAssign(x,aexp)) -> Map.add x (aexpToSigns sigma aexp) sigma
@@ -608,7 +610,6 @@ and getOpIntBExp min max sigma a1 a2 f =
 let transferInterval min max (sigma: Map<string,IntervalLattice>) ((s1,a,s2): Edge) =
   match a with
   | S(Write _)
-  | S(WriteArray(_,_))
   | S Break
   | S Continue -> sigma
   | S(VarAssign(x,aexp)) -> 

@@ -42,7 +42,6 @@ let rec PgStatement (_start: State) (_end: State)
   | Read s -> [|(_start,S statement,_end)|]
   | ReadArray(x,i) -> [|_start,S statement,_end|]
   | Write a -> [|(_start,S statement,_end)|]
-  | WriteArray(x,i) -> [|_start,S statement,_end|]
 
 and PgDeclaration (_start: State) (_end: State) 
   (_break: State) (_continue: State) (declaration: Declaration) =
