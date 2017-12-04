@@ -1,0 +1,14 @@
+{
+	int x;
+	int y;
+	int z;
+	y:=z;
+	x:=0;
+	read z;
+	while (x<=3) {
+		x:=x+1;
+		y:=y*y;
+	}
+	z:=0;
+	x:=x/z;
+}
