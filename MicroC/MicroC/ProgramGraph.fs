@@ -70,42 +70,6 @@ let getProgramGraphMap (pg: Edge[]) =
       | None -> Map.add s1 [(a,s2)] map
       ) Map.empty
 
-let getFV (pg: ProgramGraphMap) =
-    pg
-    |> Map.fold (fun fv _ dest ->
-      dest
-      |> List.fold (fun (fv': Set<string>) (a,_) ->
-        match a with
-        | S(VarAssign(s,_)) -> fv'.Add s
-        | S(ArrayAssign(s,_,_)) -> fv'.Add s
-        | S(Read s) -> fv'.Add s
-        | _ -> fv'
-        ) fv
-      ) Set.empty
-
-let rec getFVA (aExp: AExp) =
-  match aExp with
-  | V _ -> Set.empty
-  | Var x -> Set.singleton x
-  | Array(x,i) -> Set.union (Set.singleton x) (getFVA i)
-  | Add(a1,a2) -> Set.union (getFVA a1) (getFVA a2)
-  | Sub(a1,a2) -> Set.union (getFVA a1) (getFVA a2)
-  | Mult(a1,a2) -> Set.union (getFVA a1) (getFVA a2)
-  | Div(a1,a2) -> Set.union (getFVA a1) (getFVA a2)
-
-let rec getFVB (bExp: BExp) =
-  match bExp with
-  | BV _ -> Set.empty 
-  | Less(a1,a2) -> Set.union (getFVA a1) (getFVA a2)
-  | LessEq(a1,a2) -> Set.union (getFVA a1) (getFVA a2)
-  | Great(a1,a2) -> Set.union (getFVA a1) (getFVA a2)
-  | GreatEq(a1,a2) -> Set.union (getFVA a1) (getFVA a2)
-  | Eq(a1,a2) -> Set.union (getFVA a1) (getFVA a2)
-  | NotEq(a1,a2) -> Set.union (getFVA a1) (getFVA a2)
-  | And(b1,b2) -> Set.union (getFVB b1) (getFVB b2)
-  | Or(b1,b2) -> Set.union (getFVB b1) (getFVB b2)
-  | Neg b -> getFVB b
-
 let getFinalStates (pgMap: ProgramGraphMap) =
   pgMap
   |> Map.fold (fun final _ edges ->

@@ -69,6 +69,10 @@
     <Compile Include="Lexer.fs" />
     <Compile Include="ProgramGraph.fs" />
     <Compile Include="WorklistAlgo.fs" />
+    <Compile Include="analysis\ReachingDefinition.fs" />
+    <Compile Include="analysis\LiveVariables.fs" />
+    <Compile Include="analysis\DetectionOfSigns.fs" />
+    <Compile Include="analysis\Interval.fs" />
     <Compile Include="AnalysisStructures.fs" />
     <Compile Include="Analysis.fs" />
     <Compile Include="AssemblyInfo.fs" />

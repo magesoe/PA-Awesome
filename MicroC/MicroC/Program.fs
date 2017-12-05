@@ -1,11 +1,11 @@
 ﻿// Learn more about F# at http://fsharp.org
 // See the 'F# Tutorial' project for more help.
 open System.IO
-open System.Text
 open Microsoft.FSharp.Text.Lexing
 
 open Parser
 open Lexer
+open Domain
 open Analysis
 
 let lexAndParseString str=
@@ -26,13 +26,15 @@ let lexAndParseFromFile filename =
 [<EntryPoint>]
 let main argv = 
     match argv with
-    | [|filename; min; max|] -> 
+    | [|filename; useQueue; min; max|] -> 
         let program = lexAndParseFromFile filename
         printfn "Parsing completed"
-        let (rdStart, rdMap, rdRes) = doRDAnalysis program
-        let (lvStart, lvMap, lvRes) = doLVAnalysis program
-        let (_, dosMap, dosRes) = doDetectSignsAnalysis program
-        let (_, iaMap, iaRes) = doIntervalAnalysis (min |> int) (max |> int) program
+        let worklistMethod = if bool.Parse(useQueue) then FIFO else LIFO
+        let (rdStart, rdMap, rdRes) = doRDAnalysis worklistMethod program
+        let (lvStart, lvMap, lvRes) = doLVAnalysis worklistMethod program
+        let (_, dosMap, dosRes) = doDetectSignsAnalysis worklistMethod program
+        let (_, iaMap, iaRes) = 
+          doIntervalAnalysis (min |> int) (max |> int) worklistMethod program
         printfn "Program Graph forward:"
         printfn "%A" rdMap
         printfn "Start Node: %d" rdStart
@@ -51,4 +53,4 @@ let main argv =
         printfn "Interval Analysis result:"
         printfn "%A" iaRes
         0
-    | _ -> failwith "Expected exactly three parameters";;
+    | _ -> failwith "Expected exactly four parameters";;
